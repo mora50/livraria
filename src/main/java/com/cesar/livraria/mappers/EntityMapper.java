@@ -1,0 +1,8 @@
+package com.cesar.livraria.mappers;
+
+public interface EntityMapper<E, Q, S> {
+
+    E toEntity(Q request);
+
+    S toResponse(E entity);
+}
