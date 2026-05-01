@@ -17,7 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,7 +30,10 @@ import com.cesar.livraria.entities.Book;
 import com.cesar.livraria.entities.Genre;
 import com.cesar.livraria.exception.IsbnAlreadyExistsException;
 import com.cesar.livraria.exception.ResourceNotFoundException;
+import com.cesar.livraria.mappers.BookMapper;
 import com.cesar.livraria.repository.BookRepository;
+import com.cesar.livraria.request.BookRequest;
+import com.cesar.livraria.response.BookResponse;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("BookService - Unit Tests")
@@ -39,21 +42,34 @@ class BookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
-    @InjectMocks
     private BookService bookService;
 
+    private static final String SAMPLE_ID = "64fa1b2c3e4a5f6b7c8d9e0f";
+
     private Book sampleBook;
+    private BookRequest sampleRequest;
 
     @BeforeEach
     void setUp() {
+        BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
+        bookService = new BookService(bookRepository, bookMapper);
+
         sampleBook = new Book();
-        sampleBook.setId("64fa1b2c3e4a5f6b7c8d9e0f");
+        sampleBook.setId(SAMPLE_ID);
         sampleBook.setTitle("O Senhor dos Anéis");
         sampleBook.setAuthor("J.R.R. Tolkien");
         sampleBook.setIsbn("9788533613379");
         sampleBook.setPublishDate(LocalDate.of(1954, 7, 29));
         sampleBook.setGenre(Genre.FANTASIA);
         sampleBook.setAvailable(true);
+
+        sampleRequest = new BookRequest(
+                sampleBook.getTitle(),
+                sampleBook.getAuthor(),
+                sampleBook.getIsbn(),
+                sampleBook.getPublishDate(),
+                sampleBook.getGenre(),
+                sampleBook.isAvailable());
     }
 
     @Nested
@@ -63,25 +79,27 @@ class BookServiceTest {
         @Test
         @DisplayName("deve salvar e retornar o livro quando dados são válidos")
         void shouldSaveBookSuccessfully() {
-            when(bookRepository.save(sampleBook)).thenReturn(sampleBook);
+            when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
-            Book result = bookService.save(sampleBook);
+            BookResponse result = bookService.save(sampleRequest);
 
-            assertThat(result).isSameAs(sampleBook);
-            verify(bookRepository, times(1)).save(sampleBook);
+            assertThat(result.id()).isEqualTo(SAMPLE_ID);
+            assertThat(result.isbn()).isEqualTo(sampleRequest.isbn());
+            assertThat(result.title()).isEqualTo(sampleRequest.title());
+            verify(bookRepository, times(1)).save(any(Book.class));
         }
 
         @Test
         @DisplayName("deve lançar IsbnAlreadyExistsException quando ISBN duplicado")
         void shouldThrowIsbnAlreadyExistsWhenDuplicateKey() {
-            when(bookRepository.save(sampleBook))
+            when(bookRepository.save(any(Book.class)))
                     .thenThrow(new DuplicateKeyException("dup key"));
 
-            assertThatThrownBy(() -> bookService.save(sampleBook))
+            assertThatThrownBy(() -> bookService.save(sampleRequest))
                     .isInstanceOf(IsbnAlreadyExistsException.class)
-                    .hasMessageContaining(sampleBook.getIsbn());
+                    .hasMessageContaining(sampleRequest.isbn());
 
-            verify(bookRepository).save(sampleBook);
+            verify(bookRepository).save(any(Book.class));
         }
     }
 
@@ -92,12 +110,13 @@ class BookServiceTest {
         @Test
         @DisplayName("deve retornar livro quando encontrado")
         void shouldReturnBookWhenFound() {
-            when(bookRepository.findById(sampleBook.getId())).thenReturn(Optional.of(sampleBook));
+            when(bookRepository.findById(SAMPLE_ID)).thenReturn(Optional.of(sampleBook));
 
-            Book result = bookService.findById(sampleBook.getId());
+            BookResponse result = bookService.findById(SAMPLE_ID);
 
-            assertThat(result).isEqualTo(sampleBook);
-            verify(bookRepository).findById(sampleBook.getId());
+            assertThat(result.id()).isEqualTo(SAMPLE_ID);
+            assertThat(result.isbn()).isEqualTo(sampleBook.getIsbn());
+            verify(bookRepository).findById(SAMPLE_ID);
         }
 
         @Test
@@ -122,9 +141,10 @@ class BookServiceTest {
             Page<Book> page = new PageImpl<>(List.of(sampleBook));
             when(bookRepository.findAll(pageable)).thenReturn(page);
 
-            Page<Book> result = bookService.findAll(null, pageable);
+            Page<BookResponse> result = bookService.findAll(null, pageable);
 
-            assertThat(result.getContent()).containsExactly(sampleBook);
+            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getContent().get(0).id()).isEqualTo(SAMPLE_ID);
             verify(bookRepository).findAll(pageable);
             verify(bookRepository, never()).findByGenre(any(), any());
         }
@@ -136,9 +156,10 @@ class BookServiceTest {
             Page<Book> page = new PageImpl<>(List.of(sampleBook));
             when(bookRepository.findByGenre(Genre.FANTASIA, pageable)).thenReturn(page);
 
-            Page<Book> result = bookService.findAll(Genre.FANTASIA, pageable);
+            Page<BookResponse> result = bookService.findAll(Genre.FANTASIA, pageable);
 
-            assertThat(result.getContent()).containsExactly(sampleBook);
+            assertThat(result.getContent()).hasSize(1);
+            assertThat(result.getContent().get(0).genre()).isEqualTo(Genre.FANTASIA);
             verify(bookRepository).findByGenre(Genre.FANTASIA, pageable);
             verify(bookRepository, never()).findAll(pageable);
         }
@@ -151,22 +172,20 @@ class BookServiceTest {
         @Test
         @DisplayName("deve atualizar livro existente")
         void shouldUpdateExistingBook() {
-            when(bookRepository.existsById(sampleBook.getId())).thenReturn(true);
-            when(bookRepository.save(sampleBook)).thenReturn(sampleBook);
+            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(true);
+            when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
-            Book result = bookService.update(sampleBook);
+            BookResponse result = bookService.update(SAMPLE_ID, sampleRequest);
 
-            assertThat(result).isEqualTo(sampleBook);
-            verify(bookRepository).existsById(sampleBook.getId());
-            verify(bookRepository).save(sampleBook);
+            assertThat(result.id()).isEqualTo(SAMPLE_ID);
+            verify(bookRepository).existsById(SAMPLE_ID);
+            verify(bookRepository).save(any(Book.class));
         }
 
         @Test
         @DisplayName("deve lançar ResourceNotFoundException quando id é nulo")
         void shouldThrowWhenIdIsNull() {
-            sampleBook.setId(null);
-
-            assertThatThrownBy(() -> bookService.update(sampleBook))
+            assertThatThrownBy(() -> bookService.update(null, sampleRequest))
                     .isInstanceOf(ResourceNotFoundException.class);
 
             verify(bookRepository, never()).save(any());
@@ -175,13 +194,27 @@ class BookServiceTest {
         @Test
         @DisplayName("deve lançar ResourceNotFoundException quando livro não existe")
         void shouldThrowWhenBookDoesNotExist() {
-            when(bookRepository.existsById(sampleBook.getId())).thenReturn(false);
+            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(false);
 
-            assertThatThrownBy(() -> bookService.update(sampleBook))
+            assertThatThrownBy(() -> bookService.update(SAMPLE_ID, sampleRequest))
                     .isInstanceOf(ResourceNotFoundException.class)
-                    .hasMessageContaining(sampleBook.getId());
+                    .hasMessageContaining(SAMPLE_ID);
 
             verify(bookRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("deve lançar IsbnAlreadyExistsException quando update colide com ISBN existente")
+        void shouldThrowIsbnAlreadyExistsOnUpdateDuplicateKey() {
+            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(true);
+            when(bookRepository.save(any(Book.class)))
+                    .thenThrow(new DuplicateKeyException("dup key"));
+
+            assertThatThrownBy(() -> bookService.update(SAMPLE_ID, sampleRequest))
+                    .isInstanceOf(IsbnAlreadyExistsException.class)
+                    .hasMessageContaining(sampleRequest.isbn());
+
+            verify(bookRepository).save(any(Book.class));
         }
     }
 
@@ -192,12 +225,12 @@ class BookServiceTest {
         @Test
         @DisplayName("deve remover livro existente")
         void shouldDeleteExistingBook() {
-            when(bookRepository.existsById(sampleBook.getId())).thenReturn(true);
+            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(true);
 
-            bookService.deleteById(sampleBook.getId());
+            bookService.deleteById(SAMPLE_ID);
 
-            verify(bookRepository).existsById(sampleBook.getId());
-            verify(bookRepository).deleteById(sampleBook.getId());
+            verify(bookRepository).existsById(SAMPLE_ID);
+            verify(bookRepository).deleteById(SAMPLE_ID);
         }
 
         @Test

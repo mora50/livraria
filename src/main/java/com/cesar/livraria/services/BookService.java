@@ -12,28 +12,34 @@ import com.cesar.livraria.entities.Book;
 import com.cesar.livraria.entities.Genre;
 import com.cesar.livraria.exception.IsbnAlreadyExistsException;
 import com.cesar.livraria.exception.ResourceNotFoundException;
+import com.cesar.livraria.mappers.BookMapper;
 import com.cesar.livraria.repository.BookRepository;
+import com.cesar.livraria.request.BookRequest;
+import com.cesar.livraria.response.BookResponse;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
-    public Page<Book> findAll(Genre genre, Pageable pageable) {
-        if (genre == null) {
-            return bookRepository.findAll(pageable);
-        }
-        return bookRepository.findByGenre(genre, pageable);
+    public Page<BookResponse> findAll(Genre genre, Pageable pageable) {
+        Page<Book> page = (genre == null)
+                ? bookRepository.findAll(pageable)
+                : bookRepository.findByGenre(genre, pageable);
+        return page.map(bookMapper::toResponse);
     }
 
     @Cacheable(value = "books", key = "#id")
-    public Book findById(String id) {
-        return bookRepository.findById(id)
+    public BookResponse findById(String id) {
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+        return bookMapper.toResponse(book);
     }
 
     @CacheEvict(value = "books", key = "#id")
@@ -42,21 +48,33 @@ public class BookService {
             throw new ResourceNotFoundException("Book not found with id: " + id);
         }
         bookRepository.deleteById(id);
+        log.info("Book deleted: id={}", id);
     }
 
-    @CachePut(value = "books", key = "#book.id")
-    public Book update(Book book) {
-        if (book.getId() == null || !bookRepository.existsById(book.getId())) {
-            throw new ResourceNotFoundException("Book not found with id: " + book.getId());
+    @CachePut(value = "books", key = "#id")
+    public BookResponse update(String id, BookRequest request) {
+        if (id == null || !bookRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Book not found with id: " + id);
         }
-        return bookRepository.save(book);
+        Book entity = bookMapper.toEntity(request);
+        entity.setId(id);
+        try {
+            Book saved = bookRepository.save(entity);
+            log.info("Book updated: id={}, isbn={}", saved.getId(), saved.getIsbn());
+            return bookMapper.toResponse(saved);
+        } catch (DuplicateKeyException e) {
+            throw new IsbnAlreadyExistsException("Book with ISBN " + request.isbn() + " already exists");
+        }
     }
 
-    public Book save(Book book) {
+    public BookResponse save(BookRequest request) {
+        Book entity = bookMapper.toEntity(request);
         try {
-            return bookRepository.save(book);
+            Book saved = bookRepository.save(entity);
+            log.info("Book created: id={}, isbn={}", saved.getId(), saved.getIsbn());
+            return bookMapper.toResponse(saved);
         } catch (DuplicateKeyException e) {
-            throw new IsbnAlreadyExistsException("Book with ISBN " + book.getIsbn() + " already exists");
+            throw new IsbnAlreadyExistsException("Book with ISBN " + request.isbn() + " already exists");
         }
     }
 }

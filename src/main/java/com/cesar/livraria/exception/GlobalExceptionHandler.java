@@ -16,17 +16,22 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ProblemDetail> handleNotFoundException(ResourceNotFoundException ex) {
+    log.warn("Resource not found: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
   }
 
   @ExceptionHandler(IsbnAlreadyExistsException.class)
   public ResponseEntity<ProblemDetail> handleIsbnAlreadyExistsException(IsbnAlreadyExistsException ex) {
+    log.warn("ISBN conflict: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage()));
   }
