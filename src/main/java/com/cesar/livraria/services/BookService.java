@@ -53,11 +53,12 @@ public class BookService {
 
     @CachePut(value = "books", key = "#id")
     public BookResponse update(String id, BookRequest request) {
-        if (id == null || !bookRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Book not found with id: " + id);
-        }
-        Book entity = bookMapper.toEntity(request);
-        entity.setId(id);
+
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+
+        Book entity = bookMapper.updateEntity(book, request);
+
         try {
             Book saved = bookRepository.save(entity);
             log.info("Book updated: id={}, isbn={}", saved.getId(), saved.getIsbn());

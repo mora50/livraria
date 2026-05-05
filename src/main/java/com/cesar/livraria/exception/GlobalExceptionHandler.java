@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IsbnAlreadyExistsException.class)
   public ResponseEntity<ProblemDetail> handleIsbnAlreadyExistsException(IsbnAlreadyExistsException ex) {
     log.warn("ISBN conflict: {}", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
