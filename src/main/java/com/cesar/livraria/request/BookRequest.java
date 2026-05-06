@@ -17,7 +17,4 @@ public record BookRequest(
         @NotNull @PastOrPresent LocalDate publishDate,
         @NotNull Genre genre,
         boolean available) {
-    public BookRequest {
-        available = Objects.requireNonNullElse(available, true);
-    }
 }
