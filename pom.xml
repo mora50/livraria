@@ -134,13 +134,15 @@
 				<configuration>
 					<excludes>
 						<exclude>com/cesar/livraria/LivrariaApplication.class</exclude>
-						<exclude>com/cesar/livraria/entities/**</exclude>
-						<exclude>com/cesar/livraria/request/**</exclude>
-						<exclude>com/cesar/livraria/response/**</exclude>
+
+						<exclude>com/cesar/livraria/**/entities/**</exclude>
+						<exclude>com/cesar/livraria/**/dto/**</exclude>
+						<exclude>com/cesar/livraria/**/mappers/**</exclude>
+						<exclude>com/cesar/livraria/**/repository/**</exclude>
+
 						<exclude>com/cesar/livraria/config/**</exclude>
-						<exclude>com/cesar/livraria/mappers/**</exclude>
-						<exclude>com/cesar/livraria/exception/ResourceNotFoundException.class</exclude>
-						<exclude>com/cesar/livraria/exception/IsbnAlreadyExistsException.class</exclude>
+
+						<exclude>com/cesar/livraria/**/exception/*Exception.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -183,8 +185,8 @@
 								<rule>
 									<element>PACKAGE</element>
 									<includes>
-										<include>com.cesar.livraria.book.services</include>
-										<include>com.cesar.livraria.book.controllers</include>
+										<include>com.cesar.livraria.*.services</include>
+										<include>com.cesar.livraria.*.controllers</include>
 									</includes>
 									<limits>
 										<limit>
