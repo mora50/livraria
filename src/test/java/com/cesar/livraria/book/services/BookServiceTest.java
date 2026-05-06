@@ -1,4 +1,4 @@
-package com.cesar.livraria.services;
+package com.cesar.livraria.book.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,14 +26,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.cesar.livraria.entities.Book;
-import com.cesar.livraria.entities.Genre;
-import com.cesar.livraria.exception.IsbnAlreadyExistsException;
-import com.cesar.livraria.exception.ResourceNotFoundException;
-import com.cesar.livraria.mappers.BookMapper;
-import com.cesar.livraria.repository.BookRepository;
-import com.cesar.livraria.request.BookRequest;
-import com.cesar.livraria.response.BookResponse;
+import com.cesar.livraria.book.dto.request.BookRequest;
+import com.cesar.livraria.book.dto.response.BookResponse;
+import com.cesar.livraria.book.entities.Book;
+import com.cesar.livraria.book.entities.Genre;
+import com.cesar.livraria.book.exception.IsbnAlreadyExistsException;
+import com.cesar.livraria.book.mappers.BookMapper;
+import com.cesar.livraria.book.repository.BookRepository;
+import com.cesar.livraria.shared.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("BookService - Unit Tests")

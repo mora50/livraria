@@ -1,4 +1,4 @@
-package com.cesar.livraria.services;
+package com.cesar.livraria.book.services;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -8,14 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.cesar.livraria.entities.Book;
-import com.cesar.livraria.entities.Genre;
-import com.cesar.livraria.exception.IsbnAlreadyExistsException;
-import com.cesar.livraria.exception.ResourceNotFoundException;
-import com.cesar.livraria.mappers.BookMapper;
-import com.cesar.livraria.repository.BookRepository;
-import com.cesar.livraria.request.BookRequest;
-import com.cesar.livraria.response.BookResponse;
+import com.cesar.livraria.book.dto.request.BookRequest;
+import com.cesar.livraria.book.dto.response.BookResponse;
+import com.cesar.livraria.book.entities.Book;
+import com.cesar.livraria.book.entities.Genre;
+import com.cesar.livraria.book.exception.IsbnAlreadyExistsException;
+import com.cesar.livraria.book.mappers.BookMapper;
+import com.cesar.livraria.book.repository.BookRepository;
+import com.cesar.livraria.shared.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

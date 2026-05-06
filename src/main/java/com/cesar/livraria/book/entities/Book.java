@@ -1,4 +1,4 @@
-package com.cesar.livraria.entities;
+package com.cesar.livraria.book.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

@@ -1,4 +1,4 @@
-package com.cesar.livraria.controllers;
+package com.cesar.livraria.book.controllers;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cesar.livraria.entities.Genre;
-import com.cesar.livraria.request.BookRequest;
-import com.cesar.livraria.response.BookResponse;
-import com.cesar.livraria.response.PageResponse;
-import com.cesar.livraria.services.BookService;
+import com.cesar.livraria.book.entities.Genre;
+import com.cesar.livraria.book.dto.request.BookRequest;
+import com.cesar.livraria.book.dto.response.BookResponse;
+import com.cesar.livraria.book.dto.response.PageResponse;
+import com.cesar.livraria.book.services.BookService;
 
 import lombok.RequiredArgsConstructor;
 

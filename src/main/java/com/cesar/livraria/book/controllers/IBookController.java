@@ -1,9 +1,9 @@
-package com.cesar.livraria.controllers;
+package com.cesar.livraria.book.controllers;
 
-import com.cesar.livraria.entities.Genre;
-import com.cesar.livraria.request.BookRequest;
-import com.cesar.livraria.response.BookResponse;
-import com.cesar.livraria.response.PageResponse;
+import com.cesar.livraria.book.entities.Genre;
+import com.cesar.livraria.book.dto.request.BookRequest;
+import com.cesar.livraria.book.dto.response.BookResponse;
+import com.cesar.livraria.book.dto.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

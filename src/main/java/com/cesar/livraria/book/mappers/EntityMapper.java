@@ -1,4 +1,4 @@
-package com.cesar.livraria.mappers;
+package com.cesar.livraria.book.mappers;
 
 public interface EntityMapper<E, Q, S> {
 

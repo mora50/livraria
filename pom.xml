@@ -183,8 +183,8 @@
 								<rule>
 									<element>PACKAGE</element>
 									<includes>
-										<include>com.cesar.livraria.services</include>
-										<include>com.cesar.livraria.controllers</include>
+										<include>com.cesar.livraria.book.services</include>
+										<include>com.cesar.livraria.book.controllers</include>
 									</includes>
 									<limits>
 										<limit>

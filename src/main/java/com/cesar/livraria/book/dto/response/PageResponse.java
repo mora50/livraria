@@ -1,7 +1,6 @@
-package com.cesar.livraria.response;
+package com.cesar.livraria.book.dto.response;
 
 import java.util.List;
-import java.util.function.Function;
 
 import org.springframework.data.domain.Page;
 

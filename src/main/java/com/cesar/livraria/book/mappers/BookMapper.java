@@ -1,13 +1,13 @@
-package com.cesar.livraria.mappers;
+package com.cesar.livraria.book.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
-import com.cesar.livraria.entities.Book;
-import com.cesar.livraria.request.BookRequest;
-import com.cesar.livraria.response.BookResponse;
+import com.cesar.livraria.book.entities.Book;
+import com.cesar.livraria.book.dto.request.BookRequest;
+import com.cesar.livraria.book.dto.response.BookResponse;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BookMapper extends EntityMapper<Book, BookRequest, BookResponse> {

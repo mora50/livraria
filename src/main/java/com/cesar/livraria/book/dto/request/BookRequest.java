@@ -1,9 +1,8 @@
-package com.cesar.livraria.request;
+package com.cesar.livraria.book.dto.request;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
-import com.cesar.livraria.entities.Genre;
+import com.cesar.livraria.book.entities.Genre;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

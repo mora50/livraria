@@ -1,4 +1,4 @@
-package com.cesar.livraria.exception;
+package com.cesar.livraria.shared.exception;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -27,13 +27,6 @@ public class GlobalExceptionHandler {
     log.warn("Resource not found: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
-  }
-
-  @ExceptionHandler(IsbnAlreadyExistsException.class)
-  public ResponseEntity<ProblemDetail> handleIsbnAlreadyExistsException(IsbnAlreadyExistsException ex) {
-    log.warn("ISBN conflict: {}", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-        .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)

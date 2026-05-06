@@ -1,4 +1,4 @@
-package com.cesar.livraria.controllers;
+package com.cesar.livraria.book.controllers;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -26,10 +26,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.cesar.livraria.TestcontainersConfiguration;
-import com.cesar.livraria.entities.Book;
-import com.cesar.livraria.entities.Genre;
-import com.cesar.livraria.repository.BookRepository;
-import com.cesar.livraria.request.BookRequest;
+import com.cesar.livraria.book.entities.Book;
+import com.cesar.livraria.book.entities.Genre;
+import com.cesar.livraria.book.repository.BookRepository;
+import com.cesar.livraria.book.dto.request.BookRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

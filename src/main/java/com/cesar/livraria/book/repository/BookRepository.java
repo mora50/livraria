@@ -1,11 +1,11 @@
-package com.cesar.livraria.repository;
+package com.cesar.livraria.book.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.cesar.livraria.entities.Book;
-import com.cesar.livraria.entities.Genre;
+import com.cesar.livraria.book.entities.Book;
+import com.cesar.livraria.book.entities.Genre;
 
 public interface BookRepository extends MongoRepository<Book, String> {
 

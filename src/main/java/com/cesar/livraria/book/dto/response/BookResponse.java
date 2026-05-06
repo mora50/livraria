@@ -1,9 +1,9 @@
-package com.cesar.livraria.response;
+package com.cesar.livraria.book.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.cesar.livraria.entities.Genre;
+import com.cesar.livraria.book.entities.Genre;
 
 public record BookResponse(
         String id,
