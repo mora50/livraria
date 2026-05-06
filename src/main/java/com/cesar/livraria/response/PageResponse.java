@@ -22,8 +22,4 @@ public record PageResponse<T>(
                 page.getTotalPages(),
                 page.isLast());
     }
-
-    public static <E, T> PageResponse<T> from(Page<E> page, Function<E, T> mapper) {
-        return from(page.map(mapper));
-    }
 }

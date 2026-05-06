@@ -119,7 +119,7 @@ class BookControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /book - 400: deve falhar quando ISBN duplicado")
+    @DisplayName("POST /book - 409: deve falhar quando ISBN duplicado")
     void shouldReturnBadRequestWhenIsbnDuplicated() throws Exception {
         String isbn = uniqueIsbn();
         persistBook(isbn, Genre.FANTASIA);
@@ -129,7 +129,7 @@ class BookControllerIntegrationTest {
         mockMvc.perform(post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString(isbn)));
     }
 

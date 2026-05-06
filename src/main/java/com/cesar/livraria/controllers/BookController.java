@@ -12,12 +12,10 @@ import com.cesar.livraria.response.BookResponse;
 import com.cesar.livraria.response.PageResponse;
 import com.cesar.livraria.services.BookService;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/book")
-@Tag(name = "Livros", description = "Operações de gerenciamento do catálogo de livros")
 @RequiredArgsConstructor
 public class BookController implements IBookController {
 

@@ -172,13 +172,13 @@ class BookServiceTest {
         @Test
         @DisplayName("deve atualizar livro existente")
         void shouldUpdateExistingBook() {
-            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(true);
+            when(bookRepository.findById(SAMPLE_ID)).thenReturn(Optional.of(sampleBook));
             when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
             BookResponse result = bookService.update(SAMPLE_ID, sampleRequest);
 
             assertThat(result.id()).isEqualTo(SAMPLE_ID);
-            verify(bookRepository).existsById(SAMPLE_ID);
+            verify(bookRepository).findById(SAMPLE_ID);
             verify(bookRepository).save(any(Book.class));
         }
 
@@ -194,7 +194,7 @@ class BookServiceTest {
         @Test
         @DisplayName("deve lançar ResourceNotFoundException quando livro não existe")
         void shouldThrowWhenBookDoesNotExist() {
-            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(false);
+            when(bookRepository.findById(SAMPLE_ID)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> bookService.update(SAMPLE_ID, sampleRequest))
                     .isInstanceOf(ResourceNotFoundException.class)
@@ -206,7 +206,7 @@ class BookServiceTest {
         @Test
         @DisplayName("deve lançar IsbnAlreadyExistsException quando update colide com ISBN existente")
         void shouldThrowIsbnAlreadyExistsOnUpdateDuplicateKey() {
-            when(bookRepository.existsById(SAMPLE_ID)).thenReturn(true);
+            when(bookRepository.findById(SAMPLE_ID)).thenReturn(Optional.of(sampleBook));
             when(bookRepository.save(any(Book.class)))
                     .thenThrow(new DuplicateKeyException("dup key"));
 

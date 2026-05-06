@@ -19,6 +19,6 @@ public class OpenApiConfig {
                                                 .version("v1")
                                                 .contact(new Contact()
                                                                 .name("César Augusto")
-                                                                .url("https://github.com/cesaraugusto")));
+                                                                .url("https://github.com/mora50")));
         }
 }

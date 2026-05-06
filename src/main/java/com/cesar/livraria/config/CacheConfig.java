@@ -23,13 +23,14 @@ public class CacheConfig {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        Jackson2JsonRedisSerializer<BookResponse> valueSerializer =
-                new Jackson2JsonRedisSerializer<>(mapper, BookResponse.class);
+        Jackson2JsonRedisSerializer<BookResponse> valueSerializer = new Jackson2JsonRedisSerializer<>(mapper,
+                BookResponse.class);
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer));
     }
 }
