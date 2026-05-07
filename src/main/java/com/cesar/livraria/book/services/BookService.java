@@ -68,7 +68,7 @@ public class BookService {
         }
     }
 
-    public BookResponse save(BookRequest request) {
+    public BookResponse create(BookRequest request) {
         Book entity = bookMapper.toEntity(request);
         try {
             Book saved = bookRepository.save(entity);

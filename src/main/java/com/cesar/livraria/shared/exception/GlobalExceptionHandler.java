@@ -16,35 +16,24 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ProblemDetail> handleNotFoundException(ResourceNotFoundException ex) {
-    log.warn("Resource not found: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage()));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ProblemDetail> handleNotReadableException(HttpMessageNotReadableException ex) {
-    String detail = "Corpo da requisição inválido.";
+    String detail = ex.getCause() instanceof InvalidFormatException ife && !ife.getPath().isEmpty()
+            ? "Campo '%s' com valor inválido.".formatted(ife.getPath().getLast().getFieldName())
+            : "Corpo da requisição inválido ou malformado.";
 
-    if (ex.getCause() instanceof InvalidFormatException ife && !ife.getPath().isEmpty()) {
-      String field = ife.getPath().get(ife.getPath().size() - 1).getFieldName();
-      detail = "Campo " + field + " inválido.";
-
-      Class<?> targetType = ife.getTargetType();
-      if (targetType != null && targetType.isEnum()) {
-        detail += " Valores aceitos: " + Arrays.toString(targetType.getEnumConstants());
-      }
-    }
-
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail));
+    return ResponseEntity.badRequest()
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail));
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)

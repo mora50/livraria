@@ -1,7 +1,6 @@
 package com.cesar.livraria.book.controllers;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.UUID;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -130,7 +130,7 @@ class BookControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString(isbn)));
+                .andExpect(jsonPath("$.detail").value(containsString(isbn)));
     }
 
     @Test
@@ -186,7 +186,29 @@ class BookControllerIntegrationTest {
     void shouldReturnNotFoundOnGetById() throws Exception {
         mockMvc.perform(get("/book/{id}", "id-inexistente"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("id-inexistente")));
+                .andExpect(jsonPath("$.detail").value(containsString("id-inexistente")));
+    }
+
+
+    @Test
+    @DisplayName("POST /book: 400 deve retornar erro quando o body contém enum inválido")
+    void shouldReturnBadRequestWhenBodyHasInvalidEnum() throws Exception {
+
+        String bodyWithInvalidGenre = """
+            {
+                "title": "Dom Casmurro",
+                "genre": "FANTASIA2",
+                "author": "aaa",
+                "isbn": "12345",
+                "publishDate": "1988-05-05"
+            }
+            """;
+
+        mockMvc.perform(post("/book")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyWithInvalidGenre))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Campo 'genre' com valor inválido."));
     }
 
     @Test
@@ -209,6 +231,18 @@ class BookControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(saved.getId()))
                 .andExpect(jsonPath("$.title").value("O Hobbit"))
                 .andExpect(jsonPath("$.available").value(false));
+    }
+
+
+    @Test
+    @DisplayName("POST /book - 400: deve retornar erro quando body está malformado")
+    void shouldReturnBadRequestWhenBodyIsMalformed() throws Exception {
+        mockMvc.perform(post("/book")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ isso não é json }"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail")
+                        .value("Corpo da requisição inválido ou malformado."));
     }
 
     @Test
@@ -281,7 +315,7 @@ class BookControllerIntegrationTest {
         JsonNode firstJson = objectMapper.readTree(first.getResponse().getContentAsString());
         JsonNode secondJson = objectMapper.readTree(second.getResponse().getContentAsString());
 
-        org.assertj.core.api.Assertions.assertThat(secondJson.get("id").asText())
+        Assertions.assertThat(secondJson.get("id").asText())
                 .isEqualTo(firstJson.get("id").asText());
     }
 }

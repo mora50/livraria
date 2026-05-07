@@ -73,7 +73,7 @@ class BookServiceTest {
     }
 
     @Nested
-    @DisplayName("save()")
+    @DisplayName("create()")
     class Save {
 
         @Test
@@ -81,7 +81,7 @@ class BookServiceTest {
         void shouldSaveBookSuccessfully() {
             when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
-            BookResponse result = bookService.save(sampleRequest);
+            BookResponse result = bookService.create(sampleRequest);
 
             assertThat(result.id()).isEqualTo(SAMPLE_ID);
             assertThat(result.isbn()).isEqualTo(sampleRequest.isbn());
@@ -95,7 +95,7 @@ class BookServiceTest {
             when(bookRepository.save(any(Book.class)))
                     .thenThrow(new DuplicateKeyException("dup key"));
 
-            assertThatThrownBy(() -> bookService.save(sampleRequest))
+            assertThatThrownBy(() -> bookService.create(sampleRequest))
                     .isInstanceOf(IsbnAlreadyExistsException.class)
                     .hasMessageContaining(sampleRequest.isbn());
 

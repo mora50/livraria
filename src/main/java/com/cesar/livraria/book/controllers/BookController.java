@@ -1,5 +1,6 @@
 package com.cesar.livraria.book.controllers;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +24,14 @@ public class BookController implements IBookController {
 
     @Override
     public ResponseEntity<BookResponse> createBook(BookRequest req) {
-        BookResponse created = bookService.save(req);
+        BookResponse created = bookService.create(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Override
     public ResponseEntity<PageResponse<BookResponse>> listBooks(Genre genre, Pageable pageable) {
-        return ResponseEntity.ok(PageResponse.from(bookService.findAll(genre, pageable)));
+        Page<BookResponse> response = bookService.findAll(genre, pageable);
+        return ResponseEntity.ok(PageResponse.from(response));
     }
 
     @Override
