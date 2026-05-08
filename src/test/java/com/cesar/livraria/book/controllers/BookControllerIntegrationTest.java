@@ -120,7 +120,7 @@ class BookControllerIntegrationTest {
 
     @Test
     @DisplayName("POST /book - 409: deve falhar quando ISBN duplicado")
-    void shouldReturnBadRequestWhenIsbnDuplicated() throws Exception {
+    void shouldReturnConflictWhenIsbnDuplicated() throws Exception {
         String isbn = uniqueIsbn();
         persistBook(isbn, Genre.FANTASIA);
 

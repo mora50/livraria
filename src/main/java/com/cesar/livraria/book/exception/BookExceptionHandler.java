@@ -14,7 +14,7 @@ public class BookExceptionHandler {
 
   @ExceptionHandler(IsbnAlreadyExistsException.class)
   public ResponseEntity<ProblemDetail> handleIsbnAlreadyExistsException(IsbnAlreadyExistsException ex) {
-    log.warn("ISBN conflict: {}", ex.getMessage());
+    log.warn("ISBN conflito: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage()));
   }

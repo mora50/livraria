@@ -38,14 +38,14 @@ public class BookService {
     @Cacheable(value = "books", key = "#id")
     public BookResponse findById(String id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado para o id: " + id));
         return bookMapper.toResponse(book);
     }
 
     @CacheEvict(value = "books", key = "#id")
     public void deleteById(String id) {
         if (!bookRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Book not found with id: " + id);
+            throw new ResourceNotFoundException("Livro não encontrado para o id: " + id);
         }
         bookRepository.deleteById(id);
         log.info("Book deleted: id={}", id);
@@ -55,7 +55,7 @@ public class BookService {
     public BookResponse update(String id, BookRequest request) {
 
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado para o id: " + id));
 
         Book entity = bookMapper.updateEntity(book, request);
 
@@ -64,7 +64,7 @@ public class BookService {
             log.info("Book updated: id={}, isbn={}", saved.getId(), saved.getIsbn());
             return bookMapper.toResponse(saved);
         } catch (DuplicateKeyException e) {
-            throw new IsbnAlreadyExistsException("Book with ISBN " + request.isbn() + " already exists");
+            throw new IsbnAlreadyExistsException("Livro com ISBN " + request.isbn() + " já cadastrado");
         }
     }
 
@@ -75,7 +75,7 @@ public class BookService {
             log.info("Book created: id={}, isbn={}", saved.getId(), saved.getIsbn());
             return bookMapper.toResponse(saved);
         } catch (DuplicateKeyException e) {
-            throw new IsbnAlreadyExistsException("Book with ISBN " + request.isbn() + " already exists");
+            throw new IsbnAlreadyExistsException("Livro com ISBN " + request.isbn() + " já cadastrado");
         }
     }
 }

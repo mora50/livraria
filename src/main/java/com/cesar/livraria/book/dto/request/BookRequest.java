@@ -15,5 +15,7 @@ public record BookRequest(
         @NotBlank @Size(max = 15) String isbn,
         @NotNull @PastOrPresent LocalDate publishDate,
         @NotNull Genre genre,
-        boolean available) {
+        Boolean available) {
 }
+
+

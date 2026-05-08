@@ -14,5 +14,5 @@ public record BookResponse(
         LocalDateTime createdDate,
         LocalDateTime lastModifiedDate,
         Genre genre,
-        boolean available) {
+        Boolean available) {
 }

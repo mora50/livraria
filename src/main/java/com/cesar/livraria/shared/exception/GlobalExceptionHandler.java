@@ -16,8 +16,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
@@ -64,5 +67,13 @@ public class GlobalExceptionHandler {
     problem.setProperty("invalid_fields", errors);
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ProblemDetail> handleGeneric(Exception ex) {
+    log.error("Erro inesperado", ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Erro interno inesperado"));
   }
 }

@@ -33,7 +33,7 @@ public class Book {
 
     private Genre genre;
 
-    private boolean available;
+    private boolean available = true;
 
     @CreatedDate
     private LocalDateTime createdDate;
